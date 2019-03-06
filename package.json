@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "start": "pm2 start",
     "dev": "pm2 start && pm2 logs run-server",
     "dev:server": "nodemon --watch build --exec \"node build/server.js\"",
     "dev:server:build": "webpack --config webpack.server.js --watch",
@@ -28,6 +29,7 @@
     "eslint-plugin-react": "^7.12.4",
     "html-webpack-plugin": "^3.2.0",
     "jsxobj": "^1.1.0",
+    "nodemon": "^1.18.10",
     "pm2": "^3.3.1",
     "style-loader": "^0.23.1",
     "webpack": "^4.29.5",
