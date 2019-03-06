@@ -1,18 +1,27 @@
 import React from 'react';
-import { renderRoutes } from 'react-router-config';
+import { frontloadConnect } from 'react-frontload'
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import Header from '@/common/components/Header';
 import { fetchCurrentUser } from '@/common/actions';
 
-const App = ({ route }) => (
+const App = ({ children }) => (
     <div>
         <Header />
-        {renderRoutes(route.routes)}
+        {children}
     </div>
 );
 
-const loadData = ({ dispatch }) => dispatch(fetchCurrentUser());
+const loadData = async ({ fetchCurrentUser }) => await fetchCurrentUser();
 
-export default {
-    component: App,
-    loadData,
-};
+const mapDispatchToProps = dispatch =>
+    bindActionCreators({ fetchCurrentUser }, dispatch);
+
+export default connect(
+    null, mapDispatchToProps
+)(
+    frontloadConnect(loadData, {
+        onMount: true,
+        onUpdate: false
+    })(App)
+);

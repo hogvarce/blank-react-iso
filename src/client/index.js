@@ -3,7 +3,7 @@ import axios from 'axios';
 import { render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { renderRoutes } from 'react-router-config';
+import { Frontload } from 'react-frontload';
 import Routes from '@/common/routes';
 import createStore from '@/common/createStore';
 
@@ -19,7 +19,9 @@ const store = createStore(initialState, axiosIstant);
 render(
     <Provider store={store}>
         <BrowserRouter>
-            <div>{renderRoutes(Routes)}</div>
+            <Frontload noServerRender={true}>
+                <Routes />
+            </Frontload>
         </BrowserRouter>
     </Provider>,
     document.querySelector('#root')

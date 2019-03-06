@@ -9,6 +9,4 @@ export const ErrorPage = ({ staticContext = {} }) => {
     );
 }
 
-export default {
-    component: ErrorPage,
-};
+export default ErrorPage;

@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
+import { frontloadConnect } from 'react-frontload'
 import { fetchUsers } from '@/common/actions';
 
 export class Userlist extends PureComponent {
@@ -27,14 +29,20 @@ export class Userlist extends PureComponent {
     }
 }
 
-const loadData = (store) => store.dispatch(fetchUsers());
+const loadData = async ({ fetchUsers }) => await fetchUsers();
 
 
 function mapStateToProps(state) {
     return { users: state.users};
 }
 
-export default {
-    loadData,
-    component: connect(mapStateToProps, { fetchUsers })(Userlist),
-};
+const mapDispatchToProps = dispatch =>
+    bindActionCreators({ fetchUsers }, dispatch);
+
+export default connect(
+    mapStateToProps, mapDispatchToProps
+    )(
+    frontloadConnect(loadData, {
+        onMount: true,
+        onUpdate: false
+    })(Userlist));
