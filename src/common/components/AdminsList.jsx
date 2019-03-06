@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { frontloadConnect } from 'react-frontload'
 import { fetchAdmins } from '@/common/actions';
 import RequireAuth from '@/common/components/hocs/RequireAuth';
 
@@ -23,14 +25,19 @@ export class AdminsList extends PureComponent {
     }
 }
 
-const loadData = ({ dispatch }) => dispatch(fetchAdmins());
-
+const loadData = async ({ fetchAdmins }) => await fetchAdmins();
 
 function mapStateToProps(state) {
     return { admins: state.admins};
 }
 
-export default {
-    loadData,
-    component: connect(mapStateToProps, { fetchAdmins })(RequireAuth(AdminsList)),
-};
+const mapDispatchToProps = dispatch =>
+    bindActionCreators({ fetchAdmins }, dispatch);
+
+export default connect(
+    mapStateToProps, mapDispatchToProps,
+    )(
+    frontloadConnect(loadData, {
+        onMount: true,
+        onUpdate: false
+    })(RequireAuth(AdminsList)));

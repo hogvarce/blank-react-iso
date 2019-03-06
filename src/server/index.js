@@ -1,9 +1,7 @@
 import express from 'express';
 import axios from 'axios';
-import { matchRoutes } from 'react-router-config';
 import proxy from 'express-http-proxy';
 import createStore from '@/common/createStore';
-import Routes from '@/common/routes';
 import renderer from './helpers/renderer';
 
 const app = express();
@@ -18,37 +16,24 @@ app.use('/api', proxy(apiUrl, {
 }));
 app.use(express.static('public'));
 
-app.get('*', (req, res) => {
+app.get('*', async (req, res) => {
     const axiosIstant = axios.create({
         baseURL: apiUrl,
         headers: { cookie: req.get('cookie') || '' },
     });
     const store = createStore({}, axiosIstant);
-    const promises = matchRoutes(Routes, req.path)
-        .map(({ route }) => route.loadData ? route.loadData(store) : null)
-        .map((promise) => {
-            if (promise) {
-                return new Promise((resolve) => {
-                    promise.then(resolve).catch(resolve);
-                });
-            }
-            return null;
-        });
 
-    Promise.all(promises).then(() => {
-        const context = {};
-        const content = renderer(req, store, context);
+    const context = {};
+    const content = await renderer(req, store, context);
+    if (context.url) {
+        return res.redirect(301, context.url);
+    }
 
-        if (context.url) {
-            return res.redirect(301, context.url);
-        }
+    if (context.notFound) {
+        res.status(404);
+    }
 
-        if (context.notFound) {
-            res.status(404);
-        }
-
-        res.send(content);
-    });
+    res.send(content);
 });
 
 app.listen(port, () => {
