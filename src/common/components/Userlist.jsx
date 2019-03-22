@@ -42,7 +42,4 @@ const mapDispatchToProps = dispatch =>
 export default connect(
     mapStateToProps, mapDispatchToProps
     )(
-    frontloadConnect(loadData, {
-        onMount: true,
-        onUpdate: false
-    })(Userlist));
+    frontloadConnect(loadData)(Userlist));
